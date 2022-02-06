@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ListaDeContatos</string>
+    <string name="todo">TODO</string>
+    <string name="nome_contato">Nome contato:</string>
+    <string name="nome_telefone">Nome telefone:</string>
+    <string name="salvar_contato">Salvar contato</string>
+    <string name="excluir_contato">Excluir contato</string>
+    <string name="telefone_contato_teste">Telefone contato: Teste</string>
+    <string name="nome_contato_teste">Nome contato: Teste</string>
 </resources>

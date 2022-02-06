@@ -5,75 +5,80 @@ import android.view.View
 import com.everis.listadecontatos.R
 import com.everis.listadecontatos.application.ContatoApplication
 import com.everis.listadecontatos.bases.BaseActivity
+import com.everis.listadecontatos.databinding.ActivityContatoBinding
 import com.everis.listadecontatos.feature.listacontatos.model.ContatosVO
-import kotlinx.android.synthetic.main.activity_contato.*
-import kotlinx.android.synthetic.main.activity_contato.toolBar
 
 class ContatoActivity : BaseActivity() {
 
     private var idContato: Int = -1
 
+    private lateinit var binding: ActivityContatoBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_contato)
-        setupToolBar(toolBar, "Contato",true)
+
+        binding = ActivityContatoBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        setupToolBar(binding.toolBar, "Contato",true)
         setupContato()
-        btnSalvarConato.setOnClickListener { onClickSalvarContato() }
+        binding.btnSalvarConato.setOnClickListener { onClickSalvarContato() }
     }
 
     private fun setupContato(){
         idContato = intent.getIntExtra("index",-1)
         if (idContato == -1){
-            btnExcluirContato.visibility = View.GONE
+            binding.btnExcluirContato.visibility = View.GONE
             return
         }
-        progress.visibility = View.VISIBLE
+        binding.progress.visibility = View.VISIBLE
         Thread(Runnable {
             Thread.sleep(1500)
-            var lista = ContatoApplication.instance.helperDB?.buscarContatos("$idContato",true) ?: return@Runnable
-            var contato = lista.getOrNull(0) ?: return@Runnable
+            val lista = ContatoApplication.instance.helperDB?.buscarContatos("$idContato",true) ?: return@Runnable
+            val contato = lista.getOrNull(0) ?: return@Runnable
             runOnUiThread {
-                etNome.setText(contato.nome)
-                etTelefone.setText(contato.telefone)
-                progress.visibility = View.GONE
+                binding.etNome.setText(contato.nome)
+                binding.etTelefone.setText(contato.telefone)
+                binding.progress.visibility = View.GONE
             }
         }).start()
     }
 
     private fun onClickSalvarContato(){
-        val nome = etNome.text.toString()
-        val telefone = etTelefone.text.toString()
+        val nome = binding.etNome.text.toString()
+        val telefone = binding.etTelefone.text.toString()
         val contato = ContatosVO(
             idContato,
             nome,
             telefone
         )
-        progress.visibility = View.VISIBLE
-        Thread(Runnable {
+        binding.progress.visibility = View.VISIBLE
+        Thread {
             Thread.sleep(1500)
-            if(idContato == -1) {
+            if (idContato == -1) {
                 ContatoApplication.instance.helperDB?.salvarContato(contato)
-            }else{
+            } else {
                 ContatoApplication.instance.helperDB?.updateContato(contato)
             }
             runOnUiThread {
-                progress.visibility = View.GONE
+                binding.progress.visibility = View.GONE
                 finish()
             }
-        }).start()
+        }.start()
     }
 
-    fun onClickExcluirContato(view: View) {
+    fun onClickExcluirContato() {
         if(idContato > -1){
-            progress.visibility = View.VISIBLE
-            Thread(Runnable {
+            binding.progress.visibility = View.VISIBLE
+            Thread {
                 Thread.sleep(1500)
                 ContatoApplication.instance.helperDB?.deletarCoontato(idContato)
                 runOnUiThread {
-                    progress.visibility = View.GONE
+                    binding.progress.visibility = View.GONE
                     finish()
                 }
-            }).start()
+            }.start()
         }
     }
 }
